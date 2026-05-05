@@ -16,6 +16,8 @@ public class UserConfiguration : BaseEntityConfiguration<User>
         builder.Property(user => user.PasswordHash).HasMaxLength(500).IsRequired();
         builder.Property(user => user.PhoneNumber).HasMaxLength(30);
         builder.Property(user => user.ProfileImageUrl).HasMaxLength(500);
+        builder.Property(user => user.EmailConfirmationToken).HasMaxLength(200);
+        builder.Property(user => user.PasswordResetToken).HasMaxLength(200);
 
         builder.HasIndex(user => user.Email).IsUnique();
 

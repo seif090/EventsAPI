@@ -11,6 +11,9 @@ public class User : BaseEntity
     public string? PhoneNumber { get; set; }
     public string? ProfileImageUrl { get; set; }
     public bool IsEmailConfirmed { get; set; }
+    public string? EmailConfirmationToken { get; set; }
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiresAt { get; set; }
     public UserRole Role { get; set; } = UserRole.Client;
 
     public Photographer? PhotographerProfile { get; set; }
