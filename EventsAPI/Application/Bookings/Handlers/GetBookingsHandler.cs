@@ -1,5 +1,6 @@
 using EventsAPI.Application.Bookings.Models;
 using EventsAPI.Application.Bookings.Queries;
+using EventsAPI.Application.Common.Interfaces;
 using EventsAPI.Infrastructure.Persistence;
 using EventsAPI.Shared;
 using MediatR;
@@ -10,14 +11,23 @@ namespace EventsAPI.Application.Bookings.Handlers;
 public class GetBookingsHandler : IRequestHandler<GetBookingsQuery, PagedResult<BookingDto>>
 {
     private readonly AppDbContext _dbContext;
+    private readonly ICacheService _cacheService;
 
-    public GetBookingsHandler(AppDbContext dbContext)
+    public GetBookingsHandler(AppDbContext dbContext, ICacheService cacheService)
     {
         _dbContext = dbContext;
+        _cacheService = cacheService;
     }
 
     public async Task<PagedResult<BookingDto>> Handle(GetBookingsQuery request, CancellationToken cancellationToken)
     {
+        var cacheKey = $"bookings:{request.ClientId}:{request.PhotographerId}:{request.Page}:{request.PageSize}";
+        var cached = await _cacheService.GetAsync<PagedResult<BookingDto>>(cacheKey, cancellationToken);
+        if (cached is not null)
+        {
+            return cached;
+        }
+
         var query = _dbContext.Bookings.AsQueryable();
 
         if (request.ClientId.HasValue)
@@ -48,12 +58,15 @@ public class GetBookingsHandler : IRequestHandler<GetBookingsQuery, PagedResult<
             })
             .ToListAsync(cancellationToken);
 
-        return new PagedResult<BookingDto>
+        var result = new PagedResult<BookingDto>
         {
             Items = items,
             Page = request.Page,
             PageSize = request.PageSize,
             TotalCount = totalCount
         };
+
+        await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(2), cancellationToken);
+        return result;
     }
 }

@@ -2,6 +2,8 @@ using System.Text;
 using EventsAPI.Application.Authentication.Contracts;
 using EventsAPI.Application.Bookings.Commands;
 using EventsAPI.Application.Common.Behaviors;
+using EventsAPI.Application.Common.Interfaces;
+using EventsAPI.Infrastructure.Caching;
 using EventsAPI.Infrastructure.Authentication;
 using EventsAPI.Infrastructure.Persistence;
 using EventsAPI.Middleware;
@@ -24,6 +26,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+    options.InstanceName = builder.Configuration["Redis:InstanceName"];
+});
+builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
 builder.Services.AddMediatR(typeof(CreateBookingCommand).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(CreateBookingCommand).Assembly);
@@ -69,5 +78,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DataSeeder.SeedAsync(dbContext, scope.ServiceProvider);
+}
 
 app.Run();
