@@ -5,12 +5,14 @@ using EventsAPI.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EventsAPI.Controllers;
 
 [ApiController]
 [Route("api/v1/bookings")]
 [Authorize]
+[EnableRateLimiting("fixed")]
 public class BookingsController : ControllerBase
 {
     private readonly IMediator _mediator;

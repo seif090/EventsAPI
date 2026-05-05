@@ -3,11 +3,13 @@ using EventsAPI.Application.Authentication.Models;
 using EventsAPI.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EventsAPI.Controllers;
 
 [ApiController]
 [Route("api/v1/auth")]
+[EnableRateLimiting("fixed")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
