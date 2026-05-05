@@ -1,7 +1,12 @@
 using System.Text;
 using EventsAPI.Application.Authentication.Contracts;
+using EventsAPI.Application.Bookings.Commands;
+using EventsAPI.Application.Common.Behaviors;
 using EventsAPI.Infrastructure.Authentication;
 using EventsAPI.Infrastructure.Persistence;
+using EventsAPI.Middleware;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +24,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddMediatR(typeof(CreateBookingCommand).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(CreateBookingCommand).Assembly);
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
 if (jwtSettings is null || string.IsNullOrWhiteSpace(jwtSettings.Key))
@@ -55,6 +64,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
