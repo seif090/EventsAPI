@@ -28,7 +28,7 @@ import { RouterLink } from '@angular/router';
 
     <div class="row g-3" *ngIf="!loading">
       <div class="col-md-4" *ngFor="let photographer of photographers">
-        <div class="card h-100 shadow-sm">
+        <div class="card h-100 shadow border-primary">
           <div class="card-body">
             <h5 class="card-title">Photographer</h5>
             <p class="card-text text-muted">{{ photographer.location || 'Cairo' }}</p>

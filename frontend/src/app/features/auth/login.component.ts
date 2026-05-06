@@ -8,20 +8,27 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="mb-3">Login</h2>
-        <form [formGroup]="form" (ngSubmit)="submit()">
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input class="form-control" formControlName="email" type="email" />
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="mb-3">Login</h2>
+            <p class="text-muted">Access your bookings and orders.</p>
+            <form [formGroup]="form" (ngSubmit)="submit()">
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input class="form-control" formControlName="email" type="email" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input class="form-control" formControlName="password" type="password" />
+              </div>
+              <div class="d-grid">
+                <button class="btn btn-primary" [disabled]="form.invalid">Login</button>
+              </div>
+            </form>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input class="form-control" formControlName="password" type="password" />
-          </div>
-          <button class="btn btn-primary" [disabled]="form.invalid">Login</button>
-        </form>
+        </div>
       </div>
     </div>
   `

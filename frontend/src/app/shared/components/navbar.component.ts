@@ -16,10 +16,13 @@ import { TokenStorageService } from '../../core/services/token-storage.service';
             <li class="nav-item"><a class="nav-link" routerLink="/photographers">Photographers</a></li>
             <li class="nav-item"><a class="nav-link" routerLink="/bookings">Bookings</a></li>
             <li class="nav-item"><a class="nav-link" routerLink="/orders">Orders</a></li>
+            <li class="nav-item"><a class="nav-link" routerLink="/notifications" *ngIf="isAuthenticated">Notifications</a></li>
+            <li class="nav-item"><a class="nav-link" routerLink="/admin" *ngIf="isAdmin">Admin</a></li>
           </ul>
           <div class="d-flex gap-2">
             <a class="btn btn-outline-primary" routerLink="/auth/login" *ngIf="!isAuthenticated">Login</a>
             <a class="btn btn-primary" routerLink="/auth/register" *ngIf="!isAuthenticated">Register</a>
+            <a class="btn btn-outline-secondary" routerLink="/profile" *ngIf="isAuthenticated">Profile</a>
             <button class="btn btn-outline-secondary" (click)="logout()" *ngIf="isAuthenticated">Logout</button>
           </div>
         </div>
@@ -32,6 +35,10 @@ export class NavbarComponent {
 
   get isAuthenticated() {
     return !!this.tokenStorage.getAccessToken();
+  }
+
+  get isAdmin() {
+    return this.tokenStorage.getRole() === 'Admin';
   }
 
   logout() {

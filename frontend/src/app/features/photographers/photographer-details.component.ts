@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PhotographersService } from '../../core/services/photographers.service';
 import { ReviewsService } from '../../core/services/reviews.service';
 import { Photographer, PhotographerPortfolioItem } from '../../core/models/photographer.models';
@@ -10,7 +10,7 @@ import { LoadingComponent } from '../../shared/components/loading.component';
 @Component({
   selector: 'app-photographer-details',
   standalone: true,
-  imports: [CommonModule, LoadingComponent],
+  imports: [CommonModule, LoadingComponent, RouterLink],
   template: `
     <app-loading [loading]="loading"></app-loading>
 
@@ -20,6 +20,7 @@ import { LoadingComponent } from '../../shared/components/loading.component';
         <p class="text-muted">{{ photographer.bio || 'Professional photographer.' }}</p>
         <p>Location: {{ photographer.location || 'Cairo' }}</p>
         <p>Price per hour: {{ photographer.pricePerHour | currency }}</p>
+        <a class="btn btn-primary" routerLink="/bookings">Book now</a>
       </div>
       <div class="col-md-4">
         <div class="card">

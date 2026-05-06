@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { OrdersService } from '../../core/services/orders.service';
+import { TokenStorageService } from '../../core/services/token-storage.service';
 import { Order } from '../../core/models/order.models';
 import { LoadingComponent } from '../../shared/components/loading.component';
 
@@ -12,7 +13,7 @@ import { LoadingComponent } from '../../shared/components/loading.component';
   template: `
     <h2 class="mb-3">Orders</h2>
 
-    <form class="card card-body mb-4" [formGroup]="form" (ngSubmit)="createOrder()">
+    <form class="card card-body mb-4 shadow-sm" [formGroup]="form" (ngSubmit)="createOrder()">
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label">Booking ID</label>
@@ -43,7 +44,7 @@ import { LoadingComponent } from '../../shared/components/loading.component';
     <app-loading [loading]="loading"></app-loading>
 
     <div class="table-responsive" *ngIf="!loading">
-      <table class="table table-striped">
+      <table class="table table-striped align-middle">
         <thead>
           <tr>
             <th>ID</th>
@@ -54,7 +55,16 @@ import { LoadingComponent } from '../../shared/components/loading.component';
         <tbody>
           <tr *ngFor="let order of orders">
             <td>{{ order.id }}</td>
-            <td>{{ order.status }}</td>
+            <td>
+              <span class="badge bg-secondary" [ngClass]="{
+                'bg-warning': order.status === 'Pending',
+                'bg-info': order.status === 'InProduction' || order.status === 'Shipped',
+                'bg-success': order.status === 'Paid' || order.status === 'Delivered',
+                'bg-danger': order.status === 'Cancelled'
+              }">
+                {{ order.status }}
+              </span>
+            </td>
             <td>{{ order.totalPrice | currency }}</td>
           </tr>
         </tbody>
@@ -74,7 +84,15 @@ export class OrdersComponent {
     photoIds: ['', Validators.required]
   });
 
-  constructor(private fb: FormBuilder, private ordersService: OrdersService) {
+  constructor(
+    private fb: FormBuilder,
+    private ordersService: OrdersService,
+    private tokenStorage: TokenStorageService
+  ) {
+    const userId = this.tokenStorage.getUserId();
+    if (userId) {
+      this.form.patchValue({ clientId: userId });
+    }
     this.loadOrders();
   }
 

@@ -8,30 +8,37 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="mb-3">Register</h2>
-        <form [formGroup]="form" (ngSubmit)="submit()">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">First name</label>
-              <input class="form-control" formControlName="firstName" />
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Last name</label>
-              <input class="form-control" formControlName="lastName" />
-            </div>
+    <div class="row justify-content-center">
+      <div class="col-md-7">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="mb-3">Register</h2>
+            <p class="text-muted">Create an account to start booking.</p>
+            <form [formGroup]="form" (ngSubmit)="submit()">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">First name</label>
+                  <input class="form-control" formControlName="firstName" />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Last name</label>
+                  <input class="form-control" formControlName="lastName" />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input class="form-control" formControlName="email" type="email" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input class="form-control" formControlName="password" type="password" />
+              </div>
+              <div class="d-grid">
+                <button class="btn btn-primary" [disabled]="form.invalid">Register</button>
+              </div>
+            </form>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input class="form-control" formControlName="email" type="email" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input class="form-control" formControlName="password" type="password" />
-          </div>
-          <button class="btn btn-primary" [disabled]="form.invalid">Register</button>
-        </form>
+        </div>
       </div>
     </div>
   `

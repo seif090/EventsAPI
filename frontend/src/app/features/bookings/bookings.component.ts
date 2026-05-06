@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BookingsService } from '../../core/services/bookings.service';
+import { TokenStorageService } from '../../core/services/token-storage.service';
 import { Booking } from '../../core/models/booking.models';
 import { LoadingComponent } from '../../shared/components/loading.component';
 
@@ -12,7 +13,7 @@ import { LoadingComponent } from '../../shared/components/loading.component';
   template: `
     <h2 class="mb-3">Bookings</h2>
 
-    <form class="card card-body mb-4" [formGroup]="form" (ngSubmit)="createBooking()">
+    <form class="card card-body mb-4 shadow-sm" [formGroup]="form" (ngSubmit)="createBooking()">
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label">Client ID</label>
@@ -47,7 +48,7 @@ import { LoadingComponent } from '../../shared/components/loading.component';
     <app-loading [loading]="loading"></app-loading>
 
     <div class="table-responsive" *ngIf="!loading">
-      <table class="table table-striped">
+      <table class="table table-striped align-middle">
         <thead>
           <tr>
             <th>ID</th>
@@ -62,7 +63,15 @@ import { LoadingComponent } from '../../shared/components/loading.component';
             <td>{{ booking.id }}</td>
             <td>{{ booking.photographerId }}</td>
             <td>{{ booking.scheduledAt | date: 'short' }}</td>
-            <td>{{ booking.status }}</td>
+            <td>
+              <span class="badge bg-secondary" [ngClass]="{
+                'bg-warning': booking.status === 'Pending',
+                'bg-success': booking.status === 'Confirmed' || booking.status === 'Completed',
+                'bg-danger': booking.status === 'Cancelled'
+              }">
+                {{ booking.status }}
+              </span>
+            </td>
             <td>{{ booking.price | currency }}</td>
           </tr>
         </tbody>
@@ -83,7 +92,15 @@ export class BookingsComponent {
     notes: ['']
   });
 
-  constructor(private fb: FormBuilder, private bookingsService: BookingsService) {
+  constructor(
+    private fb: FormBuilder,
+    private bookingsService: BookingsService,
+    private tokenStorage: TokenStorageService
+  ) {
+    const userId = this.tokenStorage.getUserId();
+    if (userId) {
+      this.form.patchValue({ clientId: userId });
+    }
     this.loadBookings();
   }
 
